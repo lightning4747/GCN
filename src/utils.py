@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.sparse as sp
+import torch
+import warnings
 
 def normalize_adj(adj):
     """
@@ -29,11 +31,19 @@ def accuracy(output, labels):
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""
-    import torch
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
     indices = torch.from_numpy(
         np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
     )
     values = torch.from_numpy(sparse_mx.data)
     shape = torch.Size(sparse_mx.shape)
-    return torch.sparse_coo_tensor(indices, values, shape)
+    
+    # Validation
+    if indices.max() >= shape[0] or indices.min() < 0:
+        raise ValueError(f"Indices out of bounds for shape {shape}")
+    
+    # Silence invariant warning and return coalesced tensor
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning)
+        t = torch.sparse_coo_tensor(indices, values, shape)
+        return t.coalesce()

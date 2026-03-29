@@ -26,7 +26,7 @@ def train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val):
           f'loss_train: {loss_train.item():.4f}',
           f'acc_train: {acc_train.item():.4f}',
           f'loss_val: {loss_val.item():.4f}',
-          f'acc_val: {acc_val.item():.4f}')
+          f'acc_val: {acc_val.item():.4f}', flush=True)
 
 def test(model, features, adj, labels, idx_test):
     model.eval()
