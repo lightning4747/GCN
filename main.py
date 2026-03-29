@@ -71,39 +71,60 @@ parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
 
 args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
+# Device selection
+device = torch.device("cuda" if torch.cuda.is_available() else 
+                     ("mps" if torch.backends.mps.is_available() else "cpu"))
+print(f"Using device: {device}")
 
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
-if args.cuda:
+if device.type == 'cuda':
     torch.cuda.manual_seed(args.seed)
 
-# Load data
-# adj, features, labels, idx_train, idx_val, idx_test = load_data()
-
-# Model and optimizer
-# model = GCN(nfeat=features.shape[1],
-#             nhid=args.hidden,
-#             nclass=labels.max().item() + 1,
-#             dropout=args.dropout)
-# optimizer = optim.Adam(model.parameters(),
-#                        lr=args.lr, weight_decay=args.weight_decay)
-
-# if args.cuda:
-#     model.cuda()
-#     features = features.cuda()
-#     adj = adj.cuda()
-#     labels = labels.cuda()
-#     idx_train = idx_train.cuda()
-#     idx_val = idx_val.cuda()
-#     idx_test = idx_test.cuda()
-
 def main():
-    # Placeholder for execution logic (requires data)
+    # Ensure data is present
     check_and_download_data()
     
-    print("GCN Model Structure Initialized.")
-    print("To run training, place Cora dataset in data/cora/ and uncomment load_data() in main.py")
+    # Load data
+    adj, features, labels, idx_train, idx_val, idx_test = load_data()
+
+    # Move tensors to device
+    features = features.to(device)
+    adj = adj.to(device)
+    labels = labels.to(device)
+    idx_train = idx_train.to(device)
+    idx_val = idx_val.to(device)
+    idx_test = idx_test.to(device)
+
+    # Model and optimizer
+    model = GCN(nfeat=features.shape[1],
+                nhid=args.hidden,
+                nclass=labels.max().item() + 1,
+                dropout=args.dropout)
+    
+    optimizer = optim.Adam(model.parameters(),
+                           lr=args.lr, weight_decay=args.weight_decay)
+
+    # Move model to device
+    model.to(device)
+
+    # Training loop
+    t_total = time.time()
+    print(f"DEBUG: args.epochs = {args.epochs}")
+    try:
+        for epoch in range(args.epochs):
+            train(epoch, model, optimizer, features, adj, labels, idx_train, idx_val)
+            print(f"DEBUG: Completed epoch {epoch+1}")
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"ERROR: {e}")
+    
+    print("Optimization Finished!")
+    print(f"Total time elapsed: {time.time() - t_total:.4f}s")
+
+    # Testing
+    test(model, features, adj, labels, idx_test)
 
 if __name__ == "__main__":
     main()
