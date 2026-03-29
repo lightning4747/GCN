@@ -33,5 +33,7 @@
 get ~81% accuracy on Cora test set.
 
 ## Phase 4: Verification
-- [ ] Load Cora dataset (Manual step: place data in `data/cora/`).
-- [ ] Validate performance: Run `python main.py` once dependencies are installed.
+- [/] Load Cora dataset (integrated in `main.py`).
+- [/] Validate performance: Run `python main.py` and verify Accuracy.
+  - [x] Implement Device-Agnostic Pattern (CPU/CUDA/MPS).
+  - [ ] Complete 200 epochs of training.

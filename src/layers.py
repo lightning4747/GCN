@@ -27,17 +27,12 @@ class GCNLayer(nn.Module):
             nn.init.zeros_(self.bias)
 
     def forward(self, input, adj):
-        """
-        Forward pass.
-        Args:
-            input: Node feature matrix (N, C)
-            adj: Normalized adjacency matrix as a sparse tensor (N, N)
-        """
         # Linear transformation
         support = torch.mm(input, self.weight)
         
-        # Neighborhood aggregation (sparse * dense)
-        output = torch.spmm(adj, support)
+        # Neighborhood aggregation
+        # Use torch.sparse.mm which is more modern
+        output = torch.sparse.mm(adj, support)
         
         if self.bias is not None:
             return output + self.bias
