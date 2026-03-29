@@ -1,5 +1,10 @@
 # Implementation Tasks
 
+## Phase 0: Environment Setup
+- [x] Create Python 3.12 venv.
+- [x] Create `requirements.txt`.
+- [ ] Ensure local package availability.
+
 ## Phase 1: Core Utilities & Math Specs
 - [x] Implement `normalize_adj(adj)`:
   - Add self-loops ($A + I$).
@@ -7,18 +12,26 @@
 - [x] Implement sparse matrix multiplication utilities (using `torch.sparse`).
 
 ## Phase 2: Model Architecture
-- [/] Implement `GCNLayer`:
+- [x] Implement `GCNLayer`:
   - Input: Node features ($H$), Normalized Adjacency ($\hat{A}$).
   - Operation: $\hat{A} H W$.
   - Parameters: Weight matrix $W$, Optional bias $b$.
-- [ ] Implement `GCNModel`:
+- [x] Implement `GCNModel`:
   - 2-layer structure: `GCNLayer` -> `ReLU` -> `Dropout` -> `GCNLayer` -> `Softmax`.
 
 ## Phase 3: Training & Evaluation
-- [ ] Implement `masked_cross_entropy`: Loss calculation only on `train_mask`.
-- [ ] Implement `accuracy`: Evaluation metric only on `test_mask`.
-- [ ] Training Loop: Optimizer setup (Adam), learning rate scheduling, and early stopping (per paper specs).
+- [x] Implement `masked_cross_entropy`: Loss calculation only on `train_mask`.
+- [x] Implement `accuracy`: Evaluation metric only on `test_mask`.
+- [x] Training Loop: Model training, validation, and testing logic.
+    - [x] Analyze GCN paper requirements (Kipf & Welling)
+    - [x] Design Spec-Driven Development structure
+    - [x] Create `plan.md` with mathematical specifications
+    - [x] Create `tasks.md` with implementation milestones
+- [/] Execution Phase
+    - [/] Setup Environment (Python 3.12 venv)
+    - [x] Implement core math utilities (Normalizing adjacency matrix)
+get ~81% accuracy on Cora test set.
 
 ## Phase 4: Verification
-- [ ] Load Cora dataset (common benchmark for GCN).
-- [ ] Validate performance: Target ~81% accuracy on Cora test set.
+- [ ] Load Cora dataset (Manual step: place data in `data/cora/`).
+- [ ] Validate performance: Run `python main.py` once dependencies are installed.
